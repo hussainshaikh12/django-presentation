@@ -1,0 +1,72 @@
+{% extends 'todos/base.html' %} {% block title %}
+<title>Todo list</title>
+{% endblock %} {% block content %}
+
+<!-- title row -->
+<div class="card-body">
+      <h1 class="d-flex mb-3 align-items-end">
+        <span>Todo List</span>
+        <a class="btn btn-danger ml-auto mt-2" href="{% url 'todos:logout' %}">
+          Log Out
+        </a>
+      </h1>
+
+      <!-- Add a todo row -->
+
+      <form method="post" action="{% url 'todos:add' %}">
+        {% csrf_token %}
+
+        <input
+          type="text"
+          class="form-control mb-3"
+          name="title"
+          placeholder="Do laundry"
+          required
+        />
+
+        <button
+          type="submit"
+          name="submit"
+          class="btn btn-outline-primary btn-block"
+        >
+          Add
+        </button>
+      </form>
+      <hr />
+
+      <!-- todo list row -->
+
+      <div class="list-group">
+        {% for todo in todo_list %}
+        <div class="d-flex list-group-item " style="{% if todo.isCompleted %} text-decoration: line-through; {% endif %}">
+          <form
+            class="mr-2"
+            method="post"
+            action="{% url 'todos:update' todo.id %}"
+          >
+            {% csrf_token %}
+            <input
+              type="checkbox"
+              name="isCompleted"
+              onchange="this.form.submit()"
+              {% if todo.isCompleted %} 
+                checked 
+              {% endif %}
+              class="todo-status-checkbox"
+              title="{% if not todo.isCompleted %} mark as done {% else %} mark undone {% endif %}"
+            />
+          </form>
+          {{ todo.title }}
+          <a
+            class="ml-auto"
+            href="{% url 'todos:delete' todo.id %}"
+            title="Delete"
+          >
+            <i class="far fa-trash-alt"></i>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+{% endblock %}
